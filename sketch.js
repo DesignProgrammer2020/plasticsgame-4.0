@@ -7,21 +7,19 @@ let points = 0;
 let w = 600;
 let h = 600;
 
-let trash;
+let trash = [];
 let player;
 
 let yoff = 0.0; // 2nd dimension of perlin noise
 
 function setup() {
-  cnv = createCanvas(w,h);
+  cnv = createCanvas(w, h);
   textFont('monospace');
 
   player = new Player();
   player.display();
 
-  trash = new Trash();
-  trash.display();
-
+  trash.push(new Trash());
 }
 
 function draw() {
@@ -48,7 +46,7 @@ function draw() {
 }
 
 function drawRiver() {
- //blue background for sky
+  //blue background for sky
   background(0, 200, 245);
 
   //cyan waves for water
@@ -80,15 +78,15 @@ function drawRiver() {
 }
 
 function keyPressed() {
-  if (keyCode == LEFT_ARROW){
+  if (keyCode == LEFT_ARROW) {
     player.direction = 'left';
-  }else if (keyCode == RIGHT_ARROW){
+  } else if (keyCode == RIGHT_ARROW) {
     player.direction = 'right';
-  }else if (keyCode == UP_ARROW){
+  } else if (keyCode == UP_ARROW) {
     player.direction = 'up';
-  }else if (keyCode == DOWN_ARROW){
+  } else if (keyCode == DOWN_ARROW) {
     player.direction = 'down';
-  }else if (key = ' '){
+  } else if (key = ' ') {
     player.direction = 'still';
   }
 }
@@ -101,10 +99,10 @@ function title() {
   fill(0);
   textSize(36);
   textAlign(CENTER);
-  text('Collect the Trash', width/2, height/5);
+  text('Collect the Trash', width / 2, height / 5);
 
   textSize(24);
-  text('to help keep the river clean', width/2, height/2);
+  text('to help keep the river clean', width / 2, height / 2);
 
 }
 
@@ -116,28 +114,41 @@ function level1() {
   // background(200, 200, 0);
   drawRiver();
 
-  trash.display();
-  trash.move();
+  if (random(1) <= 0.01) {
+    trash.push(new Trash());
+  }
 
   player.display();
   player.move();
 
+  for (let i = 0; i < trash.length; i++) {
+    trash[i].display();
+    trash[i].move();
+  }
+
+    //check for collision; if there is one, slice that trash out; increase points
+    //need to iterate backwards through array
+
+    for (let i = trash.length-1; i>=0; i--){
+
+    if (dist(player.x, player.y, trash[i].x, trash[i].y) <= (player.r + trash[i].r) / 2) {
+      points++;
+      trash.splice(i, 1);
+    }
+  }
+
+
   textSize(36);
   fill(0);
   noStroke();
-  //check for collision; if there is one, increase points
-  if(dist(player.x, player.y, trash.x, trash.y) <= (player.r+trash.r)/2){
-    points++;
-  }
-  text(`points: ${points}`, width/4, height*0.15);
+  text(`points: ${points}`, width / 4, height * 0.15);
 
-  if (points >= 50) {
-  state = 'you win';
+  if (points >= 10) {
+    state = 'you win';
   }
 }
 
-function level1MouseClicked() {
-}
+function level1MouseClicked() {}
 
 function youWin() {
   background(230, 210, 80);
@@ -150,9 +161,9 @@ function youWin() {
 
   textSize(36);
   fill(150, 120, 40);
-  text('Winner!', width/2, height * 0.3);
+  text('Winner!', width / 2, height * 0.3);
   textSize(24);
-  text('Thank you for picking up litter.', width/2, height * 0.4);
+  text('Thank you for picking up litter.', width / 2, height * 0.4);
 }
 
 function youWinMouseClicked() {
