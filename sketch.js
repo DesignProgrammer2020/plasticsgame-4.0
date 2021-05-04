@@ -121,6 +121,7 @@ function level1() {
   player.display();
   player.move();
 
+  //iterating through trash array to display and move them
   for (let i = 0; i < trash.length; i++) {
     trash[i].display();
     trash[i].move();
